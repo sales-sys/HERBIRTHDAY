@@ -15,7 +15,10 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: url('images/HerBirthday1.jpg') center/cover no-repeat;
+            background-image: url('images/HerBirthday1.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -23,6 +26,15 @@
             align-items: center;
             overflow-x: hidden;
             position: relative;
+            background-attachment: fixed;
+        }
+        @media (max-width: 600px) {
+            body {
+                background-attachment: scroll;
+                background-size: cover;
+                background-position: center center;
+                background-repeat: no-repeat;
+            }
         }
 
         .floating-balloons {
@@ -417,13 +429,8 @@
 
     <div id="countdownSection" class="countdown-container">
         <audio id="countdownMusic" src="music/herbirthdaymusic.mp3" loop></audio>
-        <button id="playMusicBtn" style="display:none;margin-bottom:16px;padding:10px 24px;border-radius:20px;background:#8B5CF6;color:white;font-weight:600;font-size:1rem;border:none;cursor:pointer;">Play Music 🎵</button>
-        <!-- Play button is always available if music is paused, even when locked -->
-        <div id="lockedOverlay" style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(139,92,246,0.15);backdrop-filter:blur(2px);border-radius:25px;z-index:10;display:flex;flex-direction:column;justify-content:center;align-items:center;pointer-events:none;">
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" style="margin-bottom:16px;"><rect x="6" y="10" width="12" height="8" rx="3" fill="#8B5CF6"/><rect x="9" y="6" width="6" height="6" rx="3" fill="#EC4899"/><rect x="10.5" y="14" width="3" height="3" rx="1.5" fill="#F97316"/><rect x="8" y="2" width="8" height="8" rx="4" fill="#FBBF24" opacity="0.5"/><rect x="11" y="16" width="2" height="2" rx="1" fill="#DC2626"/></svg>
-            <div style="font-size:1.5rem;font-weight:700;color:#8B5CF6;margin-bottom:8px;">Locked</div>
-            <div style="font-size:1rem;color:#374151;text-align:center;max-width:300px;">This card is locked and will only unlock on Phetolo's Birthday.<br>Come back on <span style="color:#EC4899;font-weight:600;">September 19th, 2025</span> to reveal your surprise!</div>
-        </div>
+        <button id="playMusicBtn" style="margin-bottom:16px;padding:10px 24px;border-radius:20px;background:#8B5CF6;color:white;font-weight:600;font-size:1rem;border:none;cursor:pointer;">Play Music 🎵</button>
+        <button id="pauseMusicBtn" style="display:none;margin-bottom:16px;margin-left:8px;padding:10px 24px;border-radius:20px;background:#EC4899;color:white;font-weight:600;font-size:1rem;border:none;cursor:pointer;">Pause Music ⏸️</button>
         <h2 class="countdown-title">Phetolo Your Birthday's On The Way</h2>
         <p class="countdown-subtitle">Mo has got Something special planned for you! 🎉</p>
         <div class="countdown-timer">
@@ -444,7 +451,17 @@
                 <span class="time-label">Seconds</span>
             </div>
         </div>
-        <p style="color: #6B7280; font-style: italic;">Your special surprise will be revealed on September 19th at midnight! 💕</p>
+        <p style="color: #6B7280; font-style: italic;">Your special surprise will be revealed on September 18th at midnight! 💕</p>
+        <!-- Gift Wish Message Box -->
+        <div class="message-box" style="margin-top:30px;">
+            <h3>🎁 What gift would you like me to get you for your birthday?</h3>
+            <textarea class="message-input" id="giftWishMessage" placeholder="Write your birthday wish list here..."></textarea>
+            <button class="save-button" onclick="saveGiftWish()">Save Gift Wish 🎁</button>
+            <div id="savedGiftWish" style="margin-top: 15px; padding: 15px; background: rgba(139, 92, 246, 0.1); border-radius: 10px; display: none;">
+                <strong style="color: #8B5CF6;">Your saved wish list:</strong>
+                <p id="giftWishDisplay" style="margin-top: 8px; color: #374151; font-style: italic;"></p>
+            </div>
+        </div>
     </div>
 
     <div id="birthdayCard" class="card-container hidden">
@@ -517,7 +534,7 @@
 
             <h1 class="name">Phetolo's BIG 25</h1>
             <div class="age-badge">🎂 Turning 25! 🎂</div>
-            <div class="birthday-date">🌟 September 19th, 2025 🌟</div>
+            <div class="birthday-date">🌟 September 18th, 2025 🌟</div>
             <p class="message">Hey Beautiful soul, never let anyone dim your light or tell you to be anything other than your amazing self. Keep pushing forward, keep being brave, and keep shining exactly as you are. I want you to know that You are loved and absolutely incredible! 💖</p>
             <p class="love-message">I love spending time with you and you mean the world to me. Happy Birthday, gorgeous! 🌟</p>
             <button class="interactive-button" onclick="event.stopPropagation(); launchFireworks()">
@@ -543,8 +560,8 @@
     <script>
         let celebrationCount = 0;
 
-        // Set target date: September 19, 2025 at midnight
-        const targetDate = new Date('2025-09-19T00:00:00').getTime();
+        // Set target date: September 18, 2025 at midnight
+        const targetDate = new Date('2025-09-18T00:00:00').getTime();
 
         function updateCountdown() {
             const now = new Date().getTime();
@@ -561,8 +578,6 @@
                 return;
             }
 
-            // Show locked overlay if not yet birthday
-            document.getElementById('lockedOverlay').style.display = 'flex';
             // Keep countdown visible
             document.getElementById('countdownSection').classList.remove('hidden');
 
@@ -577,15 +592,14 @@
             document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
         }
 
-        // Hide locked overlay when birthday arrives
-        function unlockCard() {
-            document.getElementById('lockedOverlay').style.display = 'none';
-        }
-
         setInterval(function() {
             const now = new Date().getTime();
             if (targetDate - now < 0) {
-                unlockCard();
+                // Unlock card immediately when birthday arrives
+                document.getElementById('lockedOverlay').style.display = 'none';
+                document.getElementById('countdownSection').classList.add('hidden');
+                document.getElementById('birthdayCard').classList.remove('hidden');
+                document.getElementById('messageSection').classList.remove('hidden');
             }
             updateCountdown();
         }, 1000);
@@ -730,12 +744,36 @@
             }
         }
 
+        function saveGiftWish() {
+            const wish = document.getElementById('giftWishMessage').value.trim();
+            if (wish) {
+                localStorage.setItem('phetoloGiftWish', wish);
+                document.getElementById('giftWishDisplay').textContent = wish;
+                document.getElementById('savedGiftWish').style.display = 'block';
+                document.getElementById('giftWishMessage').value = '';
+                // Show success feedback
+                const button = document.querySelector('#countdownSection .save-button');
+                const originalText = button.textContent;
+                button.textContent = 'Wish Saved! 🎁';
+                button.style.background = 'linear-gradient(45deg, #10B981, #059669)';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = 'linear-gradient(45deg, #8B5CF6, #EC4899)';
+                }, 2000);
+            }
+        }
+
         // Load saved message on page load
         window.addEventListener('load', function() {
             const savedMessage = localStorage.getItem('phetoloMessage');
             if (savedMessage) {
                 document.getElementById('messageDisplay').textContent = savedMessage;
                 document.getElementById('savedMessage').style.display = 'block';
+            }
+            const savedWish = localStorage.getItem('phetoloGiftWish');
+            if (savedWish) {
+                document.getElementById('giftWishDisplay').textContent = savedWish;
+                document.getElementById('savedGiftWish').style.display = 'block';
             }
         });
 
@@ -749,24 +787,33 @@
         window.addEventListener('DOMContentLoaded', function() {
             var music = document.getElementById('countdownMusic');
             var playBtn = document.getElementById('playMusicBtn');
+            var pauseBtn = document.getElementById('pauseMusicBtn');
             // Try to play music automatically
             var playPromise = music.play();
             if (playPromise !== undefined) {
                 playPromise.catch(function() {
                     playBtn.style.display = 'inline-block';
+                    pauseBtn.style.display = 'none';
                 });
             }
             playBtn.addEventListener('click', function() {
                 music.play();
                 playBtn.style.display = 'none';
+                pauseBtn.style.display = 'inline-block';
             });
-            // Show play button if music is paused
-            music.addEventListener('pause', function() {
+            pauseBtn.addEventListener('click', function() {
+                music.pause();
+                pauseBtn.style.display = 'none';
                 playBtn.style.display = 'inline-block';
             });
-            // Hide button if music starts
+            // Show play/pause button depending on music state
+            music.addEventListener('pause', function() {
+                playBtn.style.display = 'inline-block';
+                pauseBtn.style.display = 'none';
+            });
             music.addEventListener('play', function() {
                 playBtn.style.display = 'none';
+                pauseBtn.style.display = 'inline-block';
             });
         });
     </script>
